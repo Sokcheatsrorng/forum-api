@@ -1,0 +1,13 @@
+MEDIA_SERVER_PATH: src/main/resources/filestorage/forum-medias/
+#MEDIA_BASE_URI: https://idonateapi.kangtido.life/media
+#MEDIA_BASE_URI: https://ishop-api.cheatdev.online/media
+MEDIA_BASE_URI: https://forum-istad-api.cheat.casa/media
+MEDIA_CLIENT_PATH: /media/**
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  api-docs:
+    path: /v3/api-docs
+  packages-to-scan: com.forum

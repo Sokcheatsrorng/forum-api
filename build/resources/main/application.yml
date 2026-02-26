@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: forum-api
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/forum_istad_db
+    username: forum_user
+    password: forum_password_secure
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+  
+  security:
+    jwt:
+      secret: CxtAt/A1de7X0jFcOAC2lH8pklAHW5YJL7JRJMWGohiOhJLsh6V48lhWZSBDvDYyoipXPcg4Jbxdq46DHB0eNg==
+      expiration: 86400000
+
+server:
+  port: 8070
+  servlet:
+    context-path: /api/v1
+
+logging:
+  level:
+    root: INFO
+    com.forum: DEBUG
+
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  api-docs:
+    path: /v3/api-docs
+  packages-to-scan: com.forum
+
+media:
+  server-path: src/main/resources/filestorage
+  client-path: /media/**
+  base-uri: localhost:3070/media

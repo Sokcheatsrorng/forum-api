@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: forum-istad-db-02
+    environment:
+      POSTGRES_USER: forum_user
+      POSTGRES_PASSWORD: forum_password_secure
+      POSTGRES_DB: forum_istad_db
+      POSTGRES_INITDB_ARGS: "-c timezone=Asia/Bangkok"
+    ports:
+      - "3432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U forum_user -d forum_istad_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - forum-network
+
+  spring-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: forum-istad-api-01
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRINGDOC_SWAGGER-UI_ENABLED: "true"
+      SPRINGDOC_SWAGGER-UI_PATH: /swagger-ui.html
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/forum_istad_db
+      SPRING_DATASOURCE_USERNAME: forum_user
+      SPRING_DATASOURCE_PASSWORD: forum_password_secure
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      JWT_SECRET: CxtAt/A1de7X0jFcOAC2lH8pklAHW5YJL7JRJMWGohiOhJLsh6V48lhWZSBDvDYyoipXPcg4Jbxdq46DHB0eNg==
+      JWT_EXPIRATION: 86400000
+      MEDIA_BASE_URI: http://localhost:8070/api/v1
+      MEDIA_SERVER_PATH: /home/foundation/medias/
+    ports:
+      - "8070:8070"
+    volumes:
+      - /home/istad/forum_istad/images:/home/foundation/medias
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - forum-network
+
+volumes:
+  postgres_data:
+
+networks:
+  forum-network:
+    driver: bridge
