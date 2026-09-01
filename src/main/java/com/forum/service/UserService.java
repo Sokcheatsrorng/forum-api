@@ -30,6 +30,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +42,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final MediaService mediaService;
+    private final RefreshTokenService refreshTokenService;
 
     public UserResponse getUserById(Integer userId) {
         User user = userRepository.findById(userId)
@@ -64,23 +66,26 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
     }
 
+    public Optional<User> findUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
     public UserResponse createUser(RegisterRequest registerRequest) {
-        if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            throw new ResourceAlreadyExistsException("Email already exists: " + registerRequest.getEmail());
+        if (userRepository.existsByEmail(registerRequest.email())) {
+            throw new ResourceAlreadyExistsException("Email already exists: " + registerRequest.email());
         }
-        if (userRepository.existsByDisplayName(registerRequest.getUsername())) {
-            throw new ResourceAlreadyExistsException("Display name already exists: " + registerRequest.getUsername());
+        if (userRepository.existsByDisplayName(registerRequest.displayName())) {
+            throw new ResourceAlreadyExistsException("Display name already exists: " + registerRequest.displayName());
         }
 
-        if (!registerRequest.getPassword().equals(registerRequest.getConfirmPassword())) {
-            throw new ResourceNotFoundException("Confirm password not match");
+        if (!registerRequest.password().equals(registerRequest.confirmPassword())) {
+            throw new IllegalArgumentException("Password and confirmation do not match");
         }
 
         User user = new User();
-        user.setDisplayName(registerRequest.getUsername());
-        user.setEmail(registerRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        user.setConfirmPassword(registerRequest.getConfirmPassword());
+        user.setDisplayName(registerRequest.displayName());
+        user.setEmail(registerRequest.email());
+        user.setPassword(passwordEncoder.encode(registerRequest.password()));
         user.setCreationDate(LocalDateTime.now());
         user.setLastAccessDate(LocalDateTime.now());
         User savedUser = userRepository.save(user);
@@ -203,6 +208,7 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
+        refreshTokenService.revokeAll(user);
     }
 
     public void updateUserInfo(String email, @Valid UserUpdateRequest userUpdateRequest) {
@@ -236,4 +242,3 @@ public class UserService {
         userRepository.save(user);
     }
 }
-

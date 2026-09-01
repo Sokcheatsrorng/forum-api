@@ -3,28 +3,21 @@ package com.forum.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.*;
-
-@Setter
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-public class RegisterRequest {
+public record RegisterRequest(
 
     @NotBlank(message = "Display name is required")
     @Size(min = 3, max = 100, message = "Display name must be between 3 and 100 characters")
-    private String username;
+    String displayName,
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
-    private String email;
+    String email,
 
     @NotBlank(message = "Password is required")
-    @Size(min = 6, max = 100, message = "Password must be between 6 and 100 characters")
-    private String password;
+    @Size(min = 8, max = 100, message = "Password must be between 8 and 100 characters")
+    String password,
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 6, max = 100, message = "Password must be between 6 and 100 characters")
-    private String confirmPassword;
-
+    @NotBlank(message = "Password confirmation is required")
+    String confirmPassword
+) {
 }

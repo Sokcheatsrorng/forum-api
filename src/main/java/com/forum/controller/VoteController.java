@@ -2,6 +2,7 @@ package com.forum.controller;
 
 import com.forum.dto.VoteRequest;
 import com.forum.dto.VoteResponse;
+import com.forum.security.CustomUserDetails;
 import com.forum.service.VoteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.List;
@@ -33,8 +35,8 @@ public class VoteController {
     @ApiResponse(responseCode = "401", description = "Unauthorized")
     public ResponseEntity<VoteResponse> createVote(
             @Valid @RequestBody VoteRequest voteDTO,
-            Principal principal) {
-        Integer userId = 1; // Replace with actual user extraction logic
+            @AuthenticationPrincipal CustomUserDetails user) {
+        Integer userId = user.getId();
         VoteResponse createdVote = voteService.createVote(voteDTO, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdVote);
     }

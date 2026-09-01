@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
@@ -25,6 +26,17 @@ public class Post {
 
     @Column(columnDefinition = "TEXT")
     private String body;
+
+    @Column(columnDefinition = "TEXT")
+    private String codeSnippet;
+
+    @Column(length = 100)
+    private String codeLanguage;
+
+    @ElementCollection
+    @CollectionTable(name = "post_images", joinColumns = @JoinColumn(name = "post_id"))
+    @Column(name = "image_url", nullable = false, length = 500)
+    private Set<String> imageUrls = new LinkedHashSet<>();
 
     @Column(nullable = false)
     private Integer score = 0;

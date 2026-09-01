@@ -28,7 +28,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    private String confirmPassword;
+    @Column(name = "email_verified", nullable = false, columnDefinition = "boolean default false")
+    private boolean emailVerified = false;
 
     @Column(nullable = false)
     private Integer reputation = 0;

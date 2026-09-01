@@ -79,6 +79,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
+    public ResponseEntity<ErrorResponse> handleInvalidRequest(RuntimeException ex, WebRequest request) {
+        HttpStatus status = ex instanceof IllegalStateException && ex.getMessage() != null && ex.getMessage().contains("do not own")
+                ? HttpStatus.FORBIDDEN : HttpStatus.BAD_REQUEST;
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(), status.value(), status.getReasonPhrase(), ex.getMessage(),
+                request.getDescription(false).replace("uri=", ""));
+        return new ResponseEntity<>(errorResponse, status);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(
             Exception ex, WebRequest request) {

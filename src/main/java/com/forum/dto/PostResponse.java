@@ -18,6 +18,12 @@ public class PostResponse {
 
     private String body;
 
+    private String codeSnippet;
+
+    private String codeLanguage;
+
+    private List<String> imageUrls;
+
     private Integer postTypeId;
 
     private Integer score;

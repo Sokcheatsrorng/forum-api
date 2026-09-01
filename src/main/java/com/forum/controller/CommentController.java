@@ -2,7 +2,9 @@ package com.forum.controller;
 
 import com.forum.dto.CommentRequest;
 import com.forum.dto.CommentResponse;
-import com.forum.entity.Comment;
+import com.forum.entity.User;
+import com.forum.repository.UserRepository;
+import com.forum.security.CustomUserDetails;
 import com.forum.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,6 +15,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.List;
@@ -24,7 +28,26 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
+    private final UserRepository userRepository;
 
+    // ==================== HELPER METHOD (same as PostController) ====================
+    private Integer getCurrentUserId(Principal principal) {
+        if (principal == null) {
+            throw new UsernameNotFoundException("No authenticated user found");
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        User currentUser = userRepository.findByEmail(userDetails.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + userDetails.getEmail()));
+
+        return currentUser.getId();
+    }
+
+    // =========================== CREATE COMMENT ===========================
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     @SecurityRequirement(name = "Bearer Authentication")
@@ -35,20 +58,14 @@ public class CommentController {
     public ResponseEntity<CommentResponse> createComment(
             @Valid @RequestBody CommentRequest commentDTO,
             Principal principal) {
-        Integer userId = 1; // Replace with actual user extraction logic
+
+        Integer userId = getCurrentUserId(principal);
+
         CommentResponse createdComment = commentService.createComment(commentDTO, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdComment);
     }
 
-    @GetMapping("/{commentId}")
-    @Operation(summary = "Get comment by ID", description = "Retrieve comment information by comment ID")
-    @ApiResponse(responseCode = "200", description = "Comment found")
-    @ApiResponse(responseCode = "404", description = "Comment not found")
-    public ResponseEntity<CommentResponse> getCommentById(@PathVariable Integer commentId) {
-        CommentResponse comment = commentService.getCommentById(commentId);
-        return ResponseEntity.ok(comment);
-    }
-
+    // =========================== UPDATE COMMENT ===========================
     @PutMapping("/{commentId}")
     @PreAuthorize("hasRole('USER')")
     @SecurityRequirement(name = "Bearer Authentication")
@@ -60,11 +77,14 @@ public class CommentController {
             @PathVariable Integer commentId,
             @Valid @RequestBody CommentRequest commentDTO,
             Principal principal) {
-        Integer userId = 1; // Replace with actual user extraction logic
+
+        Integer userId = getCurrentUserId(principal);
+
         CommentResponse updatedComment = commentService.updateComment(commentId, commentDTO, userId);
         return ResponseEntity.ok(updatedComment);
     }
 
+    // =========================== DELETE COMMENT ===========================
     @DeleteMapping("/{commentId}")
     @PreAuthorize("hasRole('USER')")
     @SecurityRequirement(name = "Bearer Authentication")
@@ -75,32 +95,31 @@ public class CommentController {
     public ResponseEntity<Void> deleteComment(
             @PathVariable Integer commentId,
             Principal principal) {
-        Integer userId = 1; // Replace with actual user extraction logic
+
+        Integer userId = getCurrentUserId(principal);
+
         commentService.deleteComment(commentId, userId);
         return ResponseEntity.noContent().build();
     }
 
+    // ======================== PUBLIC ENDPOINTS (clean & consistent) ========================
+    @GetMapping("/{commentId}")
+    public ResponseEntity<CommentResponse> getCommentById(@PathVariable Integer commentId) {
+        return ResponseEntity.ok(commentService.getCommentById(commentId));
+    }
+
     @GetMapping("/post/{postId}")
-    @Operation(summary = "Get post comments", description = "Retrieve all comments for a specific post")
-    @ApiResponse(responseCode = "200", description = "Comments retrieved successfully")
     public ResponseEntity<List<CommentResponse>> getCommentsByPostId(@PathVariable Integer postId) {
-        List<CommentResponse> comments = commentService.getCommentsByPostId(postId);
-        return ResponseEntity.ok(comments);
+        return ResponseEntity.ok(commentService.getCommentsByPostId(postId));
     }
 
     @GetMapping("/user/{userId}")
-    @Operation(summary = "Get user's comments", description = "Retrieve all comments created by a specific user")
-    @ApiResponse(responseCode = "200", description = "Comments retrieved successfully")
     public ResponseEntity<List<CommentResponse>> getCommentsByUserId(@PathVariable Integer userId) {
-        List<CommentResponse> comments = commentService.getCommentsByUserId(userId);
-        return ResponseEntity.ok(comments);
+        return ResponseEntity.ok(commentService.getCommentsByUserId(userId));
     }
 
     @GetMapping("/search")
-    @Operation(summary = "Search comments", description = "Search comments by text content")
-    @ApiResponse(responseCode = "200", description = "Search results returned")
     public ResponseEntity<List<CommentResponse>> searchComments(@RequestParam String query) {
-        List<CommentResponse> comments = commentService.searchComments(query);
-        return ResponseEntity.ok(comments);
+        return ResponseEntity.ok(commentService.searchComments(query));
     }
 }

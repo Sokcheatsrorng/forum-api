@@ -1,1 +1,6 @@
-MEDIA_BASE_URI: localhost:8070/media
+MEDIA_SERVER_PATH: src/main/resources/filestorage/forum-medias
+#MEDIA_BASE_URI: https://idonateapi.kangtido.life/media
+#MEDIA_BASE_URI: https://ishop-api.cheatdev.online/media
+MEDIA_BASE_URI: http://localhost:8070/api/v1/media
+MEDIA_CLIENT_PATH: /media/**
+

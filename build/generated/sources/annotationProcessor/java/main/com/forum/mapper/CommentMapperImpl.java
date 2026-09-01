@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-02-25T22:30:08+0700",
-    comments = "version: 1.5.5.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.2.jar, environment: Java 23.0.1 (Oracle Corporation)"
+    date = "2026-09-01T12:01:14+0700",
+    comments = "version: 1.6.2, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.2.jar, environment: Java 23.0.1 (Oracle Corporation)"
 )
 @Component
 public class CommentMapperImpl implements CommentMapper {
@@ -36,47 +36,26 @@ public class CommentMapperImpl implements CommentMapper {
     }
 
     private Integer commentPostId(Comment comment) {
-        if ( comment == null ) {
-            return null;
-        }
         Post post = comment.getPost();
         if ( post == null ) {
             return null;
         }
-        Integer id = post.getId();
-        if ( id == null ) {
-            return null;
-        }
-        return id;
+        return post.getId();
     }
 
     private Integer commentUserId(Comment comment) {
-        if ( comment == null ) {
-            return null;
-        }
         User user = comment.getUser();
         if ( user == null ) {
             return null;
         }
-        Integer id = user.getId();
-        if ( id == null ) {
-            return null;
-        }
-        return id;
+        return user.getId();
     }
 
     private String commentUserDisplayName(Comment comment) {
-        if ( comment == null ) {
-            return null;
-        }
         User user = comment.getUser();
         if ( user == null ) {
             return null;
         }
-        String displayName = user.getDisplayName();
-        if ( displayName == null ) {
-            return null;
-        }
-        return displayName;
+        return user.getDisplayName();
     }
 }

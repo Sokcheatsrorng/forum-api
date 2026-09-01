@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,11 @@ public class PostService {
         Post post = new Post();
         post.setTitle(postDTO.getTitle());
         post.setBody(postDTO.getBody());
+        post.setCodeSnippet(postDTO.getCodeSnippet());
+        post.setCodeLanguage(postDTO.getCodeLanguage());
+        if (postDTO.getImageUrls() != null) {
+            post.setImageUrls(new LinkedHashSet<>(postDTO.getImageUrls()));
+        }
         post.setOwner(userService.getUserEntityById(userId));
         post.setCreationDate(LocalDateTime.now());
         post.setLastActivityDate(LocalDateTime.now());
@@ -91,6 +97,8 @@ public class PostService {
 
         post.setTitle(postDTO.getTitle());
         post.setBody(postDTO.getBody());
+        post.setCodeSnippet(postDTO.getCodeSnippet());
+        post.setCodeLanguage(postDTO.getCodeLanguage());
         post.setLastEditDate(LocalDateTime.now());
         post.setLastActivityDate(LocalDateTime.now());
 
@@ -102,6 +110,10 @@ public class PostService {
                             .orElseThrow(() -> new ResourceNotFoundException("Tag not found: " + id)))
                     .collect(Collectors.toSet());
             post.setTags(tags);
+        }
+
+        if (postDTO.getImageUrls() != null) {
+            post.setImageUrls(new LinkedHashSet<>(postDTO.getImageUrls()));
         }
 
         return mapToDTO(postRepository.save(post));
@@ -192,6 +204,9 @@ public class PostService {
         dto.setId(post.getId());
         dto.setTitle(post.getTitle());
         dto.setBody(post.getBody());
+        dto.setCodeSnippet(post.getCodeSnippet());
+        dto.setCodeLanguage(post.getCodeLanguage());
+        dto.setImageUrls(post.getImageUrls().stream().toList());
         dto.setPostTypeId(post.getPostType().getId());
         dto.setScore(post.getScore() != null ? post.getScore() : 0);
         dto.setViewCount(post.getViewCount() != null ? post.getViewCount() : 0);

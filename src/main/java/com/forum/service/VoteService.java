@@ -4,6 +4,7 @@ import com.forum.dto.VoteRequest;
 import com.forum.dto.VoteResponse;
 import com.forum.entity.Vote;
 import com.forum.entity.VoteType;
+import com.forum.entity.NotificationType;
 import com.forum.exception.ResourceNotFoundException;
 import com.forum.repository.VoteRepository;
 import com.forum.repository.VoteTypeRepository;
@@ -27,6 +28,7 @@ public class VoteService {
     private final VoteTypeRepository voteTypeRepository;
     private final PostService postService;
     private final UserService userService;
+    private final NotificationService notificationService;
 
     public VoteResponse createVote(VoteRequest voteDTO, Integer userId) {
         Optional<Vote> existingVote = voteRepository.findByPostIdAndUserId(voteDTO.getPostId(), userId);
@@ -55,6 +57,14 @@ public class VoteService {
             postService.incrementScore(voteDTO.getPostId(), -1);
             userService.incrementDownVotes(userId);
         }
+
+        notificationService.create(
+                savedVote.getPost().getOwner(),
+                savedVote.getUser(),
+                NotificationType.POST_VOTE,
+                "New vote on your post",
+                savedVote.getUser().getDisplayName() + " voted on \"" + savedVote.getPost().getTitle() + "\"",
+                "/posts/" + savedVote.getPost().getId());
 
         return mapToDTO(savedVote);
     }

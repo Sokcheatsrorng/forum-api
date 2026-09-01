@@ -1,14 +1,15 @@
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.0'
-	id 'io.spring.dependency-management' version '1.1.4'
+	id 'io.spring.dependency-management' version '1.1.6'   // ← update to latest stable
 }
 
-group = 'com.forum'
+group = 'edu.istad.jomnorncode'   // ← better to use your actual group
 version = '0.0.1-SNAPSHOT'
 
 java {
 	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
@@ -21,44 +22,44 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-//    security
-	implementation 'org.springframework.boot:spring-boot-starter-security'
+	// OAuth2 / JWT Resource Server (only one of these is needed depending on your setup)
+	// If you're using JWT as Bearer token → keep this
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
 	// Database
-	implementation 'org.postgresql:postgresql:42.7.1'
-	runtimeOnly 'org.postgresql:postgresql'
+	runtimeOnly 'org.postgresql:postgresql:42.7.4'   // ← latest stable
 
-	// JWT
-	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
-	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
-	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+	// JWT (jjwt)
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 
-	// mapstruct
-	compileOnly 'org.mapstruct:mapstruct:1.5.5.Final'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+	// MapStruct
+	implementation 'org.mapstruct:mapstruct:1.6.2'           // ← latest
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.2'
+	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
-
-	// Swagger/OpenAPI
-//	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
-//	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
-
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+	// Swagger / OpenAPI (springdoc)
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'   // good version
 
 	// Lombok
-//	compileOnly 'org.projectlombok:lombok'
-//	annotationProcessor 'org.projectlombok:lombok'
-	compileOnly 'org.projectlombok:lombok:1.18.42'
-	annotationProcessor 'org.projectlombok:lombok:1.18.42'
+	compileOnly 'org.projectlombok:lombok:1.18.34'          // latest stable
+	annotationProcessor 'org.projectlombok:lombok:1.18.34'
 
-	// Testing
+	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
-
-	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// Optional: make bootJar reproducible & smaller
+bootJar {
+	enabled = true
+	archiveFileName = "${project.name}-${project.version}.jar"
 }

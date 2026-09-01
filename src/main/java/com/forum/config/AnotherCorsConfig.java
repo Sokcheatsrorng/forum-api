@@ -18,7 +18,7 @@ public class AnotherCorsConfig {
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of("*")); // Allow all origins
         config.setAllowedHeaders(List.of("*")); // Allow all headers
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allow all HTTP methods
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }

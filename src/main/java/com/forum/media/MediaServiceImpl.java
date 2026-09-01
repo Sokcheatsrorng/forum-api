@@ -34,7 +34,14 @@ public class MediaServiceImpl  implements  MediaService{
 
         String newName = Utils.generateUuid() + Utils.extractExtension(Objects.requireNonNull(multipartFile.getOriginalFilename()));
 
-        Path pathDirectory = Paths.get(mediaServerPath);
+        String normalizedFolder = folderName == null ? "" : folderName.trim().replace("\\", "/");
+        if (normalizedFolder.startsWith("/") || normalizedFolder.contains("..")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid media folder");
+        }
+
+        Path pathDirectory = normalizedFolder.isEmpty()
+                ? Paths.get(mediaServerPath)
+                : Paths.get(mediaServerPath).resolve(normalizedFolder);
 
         if (!Files.exists(pathDirectory)) {
             try {
@@ -62,7 +69,8 @@ public class MediaServiceImpl  implements  MediaService{
                 .contentType(multipartFile.getContentType())
                 .extension(Utils.extractExtension(multipartFile.getOriginalFilename()))
                 .size(multipartFile.getSize())
-                .uri(String.format("%s/%s/%s", mediaBaseUri, folderName, newName))
+                .uri(String.format("%s/%s", mediaBaseUri.replaceAll("/+$", ""),
+                        normalizedFolder.isEmpty() ? newName : normalizedFolder + "/" + newName))
                 .build();
 
 //        return MediaResponse.builder()

@@ -15,3 +15,5 @@ public interface UserMapper {
     @Mapping(source = "bookmark", target = "bookmark")
     UserDetailResponse toUserDetailResponse(User user);
 }
+
+//create the thing that you want you create

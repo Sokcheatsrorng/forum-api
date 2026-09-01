@@ -4,6 +4,7 @@ import com.forum.dto.CommentRequest;
 import com.forum.dto.CommentResponse;
 import com.forum.dto.VoteResponse;
 import com.forum.entity.Comment;
+import com.forum.entity.NotificationType;
 import com.forum.entity.Post;
 import com.forum.entity.Vote;
 import com.forum.exception.ResourceNotFoundException;
@@ -25,6 +26,7 @@ public class CommentService {
     private final PostService postService;
     private final UserService userService;
     private final VoteRepository voteRepository;
+    private final NotificationService notificationService;
 
     public CommentResponse createComment(CommentRequest commentDTO, Integer userId) {
         Comment comment = new Comment();
@@ -35,6 +37,13 @@ public class CommentService {
         comment.setLastEditDate(LocalDateTime.now());
 
         Comment savedComment = commentRepository.save(comment);
+        notificationService.create(
+                savedComment.getPost().getOwner(),
+                savedComment.getUser(),
+                NotificationType.COMMENT_ON_POST,
+                "New comment on your post",
+                savedComment.getUser().getDisplayName() + " commented on \"" + savedComment.getPost().getTitle() + "\"",
+                "/posts/" + savedComment.getPost().getId());
         return mapToDTO(savedComment);
     }
 

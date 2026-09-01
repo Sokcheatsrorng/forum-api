@@ -19,12 +19,14 @@ public class CustomUserDetails implements UserDetails {
     private final String email;
     private final String password;
     private final String displayName;
+    private final boolean emailVerified;
 
     private CustomUserDetails(User user) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.password = user.getPassword();
         this.displayName = user.getDisplayName();
+        this.emailVerified = user.isEmailVerified();
     }
 
     public static CustomUserDetails create(User user) {
@@ -56,5 +58,5 @@ public class CustomUserDetails implements UserDetails {
     public boolean isCredentialsNonExpired() { return true; }
 
     @Override
-    public boolean isEnabled() { return true; }
+    public boolean isEnabled() { return emailVerified; }
 }

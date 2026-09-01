@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -61,40 +62,32 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                                           CorsConfigurationSource corsConfigurationSource) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
                 .authorizeHttpRequests(authz -> authz
-                        // 1. Completely public endpoints (no auth at all)
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/upload/**").permitAll()           // ← media uploads public? (see note below)
-
-                        // 2. Public reads
+                        .requestMatchers("/upload/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/tags/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/comment/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/lost-found/**").permitAll()
                         .requestMatchers("/media/**").permitAll()
-
-                        // 3. Documentation & dev tools — keep public in dev, maybe restrict in prod
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
-                                "/api-docs/**"           // ← added missing one if you use older springdoc
+                                "/api-docs/**"
                         ).permitAll()
-
-                        // 4. Authenticated writes / actions
                         .requestMatchers(HttpMethod.POST, "/posts", "/posts/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/tags/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/comment/**").authenticated()
-
-                        // 5. Everything else requires authentication (deny-by-default)
                         .anyRequest().authenticated()
                 )
-
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 

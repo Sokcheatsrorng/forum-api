@@ -3,7 +3,7 @@ spring:
     name: forum-api
   
   datasource:
-    url: jdbc:postgresql://localhost:5432/forum_istad_db
+    url: jdbc:postgresql://202.178.125.77:3432/forum_istad_db
     username: forum_user
     password: forum_password_secure
     driver-class-name: org.postgresql.Driver
@@ -21,6 +21,16 @@ spring:
     jwt:
       secret: CxtAt/A1de7X0jFcOAC2lH8pklAHW5YJL7JRJMWGohiOhJLsh6V48lhWZSBDvDYyoipXPcg4Jbxdq46DHB0eNg==
       expiration: 86400000
+      refresh-expiration: 2592000000
+
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail.smtp.auth: ${MAIL_SMTP_AUTH:true}
+      mail.smtp.starttls.enable: ${MAIL_SMTP_STARTTLS:true}
 
 server:
   port: 8070
@@ -42,6 +52,12 @@ springdoc:
   packages-to-scan: com.forum
 
 media:
-  server-path:  ${MEDIA_SERVER_PATH}
+  server-path: ${MEDIA_SERVER_PATH:src/main/resources/filestorage}
   client-path: /media/**
-  base-uri:  ${MEDIA_BASE_URI}
+  base-uri: ${MEDIA_BASE_URI}
+
+app:
+  frontend-url: ${FRONTEND_URL:http://localhost:3000}
+  mail:
+    enabled: ${APP_MAIL_ENABLED:false}
+    from: ${MAIL_FROM:no-reply@forum.local}

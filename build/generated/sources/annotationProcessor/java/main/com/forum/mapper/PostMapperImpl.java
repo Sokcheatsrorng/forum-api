@@ -17,8 +17,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-02-25T22:30:08+0700",
-    comments = "version: 1.5.5.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.2.jar, environment: Java 23.0.1 (Oracle Corporation)"
+    date = "2026-09-01T12:01:14+0700",
+    comments = "version: 1.6.2, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.2.jar, environment: Java 23.0.1 (Oracle Corporation)"
 )
 @Component
 public class PostMapperImpl implements PostMapper {
@@ -44,6 +44,12 @@ public class PostMapperImpl implements PostMapper {
         postResponse.setId( post.getId() );
         postResponse.setTitle( post.getTitle() );
         postResponse.setBody( post.getBody() );
+        postResponse.setCodeSnippet( post.getCodeSnippet() );
+        postResponse.setCodeLanguage( post.getCodeLanguage() );
+        Set<String> set = post.getImageUrls();
+        if ( set != null ) {
+            postResponse.setImageUrls( new ArrayList<String>( set ) );
+        }
         postResponse.setScore( post.getScore() );
         postResponse.setViewCount( post.getViewCount() );
         postResponse.setParentId( post.getParentId() );
@@ -55,48 +61,27 @@ public class PostMapperImpl implements PostMapper {
     }
 
     private Integer postOwnerId(Post post) {
-        if ( post == null ) {
-            return null;
-        }
         User owner = post.getOwner();
         if ( owner == null ) {
             return null;
         }
-        Integer id = owner.getId();
-        if ( id == null ) {
-            return null;
-        }
-        return id;
+        return owner.getId();
     }
 
     private String postOwnerDisplayName(Post post) {
-        if ( post == null ) {
-            return null;
-        }
         User owner = post.getOwner();
         if ( owner == null ) {
             return null;
         }
-        String displayName = owner.getDisplayName();
-        if ( displayName == null ) {
-            return null;
-        }
-        return displayName;
+        return owner.getDisplayName();
     }
 
     private Integer postPostTypeId(Post post) {
-        if ( post == null ) {
-            return null;
-        }
         PostType postType = post.getPostType();
         if ( postType == null ) {
             return null;
         }
-        Integer id = postType.getId();
-        if ( id == null ) {
-            return null;
-        }
-        return id;
+        return postType.getId();
     }
 
     protected List<TagResponse> tagSetToTagResponseList(Set<Tag> set) {
