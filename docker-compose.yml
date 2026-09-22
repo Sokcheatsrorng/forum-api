@@ -38,14 +38,14 @@ services:
       JWT_EXPIRATION: 86400000
       MEDIA_BASE_URI: http://localhost:8070/api/v1
       MEDIA_SERVER_PATH: /home/foundation/medias/
-      APP_MAIL_ENABLED: "${APP_MAIL_ENABLED:-true}"
-      MAIL_HOST: "${MAIL_HOST:-smtp.gmail.com}"
-      MAIL_PORT: "${MAIL_PORT:-587}"
-      MAIL_USERNAME: "${MAIL_USERNAME:-}"
-      MAIL_PASSWORD: "${MAIL_PASSWORD:-}"
-      MAIL_FROM: "${MAIL_FROM:-}"
-      MAIL_SMTP_AUTH: "${MAIL_SMTP_AUTH:-true}"
-      MAIL_SMTP_STARTTLS: "${MAIL_SMTP_STARTTLS:-true}"
+      APP_MAIL_ENABLED: true
+      MAIL_HOST: smtp.gmail.com
+      MAIL_PORT: 587
+      MAIL_USERNAME: sokcheatsrorng@gmail.com
+      MAIL_PASSWORD: rjth cxib efsg rfqt
+      MAIL_FROM: sokcheatsrorng@gmail.com
+      MAIL_SMTP_AUTH: true
+      MAIL_SMTP_STARTTLS: true
     ports:
       - "8070:8070"
     volumes:

@@ -52,8 +52,8 @@ public class OpenApiConfig {
                         .version("1.0")
                         .description("ISTAD Forum API"))
                 .addServersItem(new Server()
-//                        .url("https://forum-istad-api.cheat.casa/api/v1")
-                        .url("http://localhost:8070/api/v1/")
+                        .url("https://forum-istad-api.cheat.casa/api/v1")
+//                        .url("http://localhost:8070/api/v1/")
                         .description("Production HTTPS"))
                 .components(new Components()
                         .addSecuritySchemes("Bearer Authentication",
