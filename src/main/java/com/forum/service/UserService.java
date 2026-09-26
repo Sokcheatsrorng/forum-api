@@ -237,7 +237,7 @@ public class UserService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "User not found"));
 
-        MediaResponse response = mediaService.uploadSingle(file, "");
+        MediaResponse response = mediaService.uploadSingle(file, "media");
 
         user.setProfileImage(response.uri());
         userRepository.save(user);
