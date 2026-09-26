@@ -5,4 +5,6 @@ import java.util.List;
 public interface ItemMatchRepository extends JpaRepository<ItemMatch, Integer> {
     boolean existsByLostItemIdAndFoundItemId(Integer lostItemId, Integer foundItemId);
     List<ItemMatch> findByLostItemIdOrFoundItemIdOrderByTotalScoreDesc(Integer lostItemId, Integer foundItemId);
+
+    void deleteByLostItemIdOrFoundItemId(Integer reportId, Integer reportId1);
 }

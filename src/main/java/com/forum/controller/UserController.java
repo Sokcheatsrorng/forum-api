@@ -35,6 +35,7 @@ public class UserController {
 
     private final UserService userService;
 
+
     @GetMapping("/{userId}")
     @Operation(summary = "Get user by ID", description = "Retrieve user information by user ID")
     @ApiResponse(responseCode = "200", description = "User found")

@@ -28,6 +28,9 @@ public class LostFoundController {
     @GetMapping("/reports") public List<ItemReportResponse> reports(@RequestParam(required = false) String itemType) { return lostFoundService.listReports(itemType); }
     @GetMapping("/reports/{reportId}") public ItemReportResponse report(@PathVariable Integer reportId) { return lostFoundService.getReport(reportId); }
     @PostMapping("/reports") public ResponseEntity<ItemReportResponse> createReport(@Valid @RequestBody ItemReportRequest request, Authentication authentication) { return ResponseEntity.status(HttpStatus.CREATED).body(lostFoundService.createReport(request, userId(authentication))); }
+    @PutMapping("/reports/{reportId}") public ItemReportResponse updateReport(@PathVariable Integer reportId, @Valid @RequestBody ItemReportRequest request, Authentication authentication) { return lostFoundService.updateReport(reportId, request, userId(authentication)); }
+    @DeleteMapping("/reports/{reportId}") public ResponseEntity<Void> deleteReport(@PathVariable Integer reportId, Authentication authentication) { lostFoundService.deleteReport(reportId, userId(authentication)); return ResponseEntity.noContent().build(); }
+
 
     @PostMapping("/reports/{reportId}/claims") public ResponseEntity<ClaimResponse> claim(@PathVariable Integer reportId, @Valid @RequestBody ClaimRequest request, Authentication authentication) { return ResponseEntity.status(HttpStatus.CREATED).body(lostFoundService.claim(reportId, request, userId(authentication))); }
     @GetMapping("/reports/{reportId}/claims") public List<ClaimResponse> claims(@PathVariable Integer reportId, Authentication authentication) { return lostFoundService.claims(reportId, userId(authentication)); }

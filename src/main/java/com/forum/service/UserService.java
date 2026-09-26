@@ -43,6 +43,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final MediaService mediaService;
     private final RefreshTokenService refreshTokenService;
+    private static final String MEDIA_BASE_URL = "https://forum-istad-api.cheat.casa/api/v1/media/";
 
     public UserResponse getUserById(Integer userId) {
         User user = userRepository.findById(userId)
@@ -223,7 +224,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void updateProfileImage(String email, MultipartFile file) {
+    public String updateProfileImage(String email, MultipartFile file) {
 
         // validate file type
         String contentType = file.getContentType();
@@ -236,9 +237,11 @@ public class UserService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "User not found"));
 
-        MediaResponse response = mediaService.uploadSingle(file, "profile-images");
+        MediaResponse response = mediaService.uploadSingle(file, "media");
 
         user.setProfileImage(response.uri());
         userRepository.save(user);
+
+        return response.uri();
     }
 }

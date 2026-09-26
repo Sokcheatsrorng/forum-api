@@ -52,6 +52,31 @@ public class LostFoundService {
         return toResponse(saved);
     }
 
+    public ItemReportResponse updateReport(Integer reportId, ItemReportRequest request, Integer currentUserId) {
+        ItemReport report = report(reportId);
+        requireOwner(report, currentUserId);
+        if (!"open".equals(report.getStatus())) throw new IllegalStateException("Only open reports can be updated");
+        validateRequest(request);
+        report.setItemType(request.itemType().toLowerCase()); report.setTitle(request.title());
+        report.setCategory(request.categoryId() == null ? null : category(request.categoryId())); report.setDescription(request.description());
+        report.setItemDate(request.itemDate()); report.setScope(request.scope().toLowerCase());
+        report.setLocation(request.locationId() == null ? null : location(request.locationId())); report.setMapLat(request.mapLat()); report.setMapLng(request.mapLng());
+        report.setFreeTextLocation(request.freeTextLocation()); report.setPhotoUrl(request.photoUrl());
+        report.setHiddenDetail(request.itemType().equalsIgnoreCase("found") ? request.hiddenDetail() : null);
+        report.setModerationStatus("pending");
+        ItemReport saved = reportRepository.save(report);
+        return toResponse(saved);
+    }
+
+    public void deleteReport(Integer reportId, Integer currentUserId) {
+        ItemReport report = report(reportId);
+        requireOwner(report, currentUserId);
+        if (claimRepository.existsByItemReportIdAndStatus(reportId, "approved")) throw new IllegalStateException("Cannot delete a report with an approved claim");
+        matchRepository.deleteByLostItemIdOrFoundItemId(reportId, reportId);
+        claimRepository.deleteByItemReportId(reportId);
+        reportRepository.delete(report);
+    }
+
     @Transactional(readOnly = true)
     public List<ItemReportResponse> listReports(String itemType) {
         List<ItemReport> reports = itemType == null ? reportRepository.findByStatusOrderByCreatedAtDesc("open") :
