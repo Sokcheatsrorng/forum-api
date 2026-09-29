@@ -10,7 +10,7 @@ services:
       POSTGRES_DB: forum_istad_db
       POSTGRES_INITDB_ARGS: "-c timezone=Asia/Bangkok"
     ports:
-      - "3432:5432"
+      - "127.0.0.1:3432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -36,7 +36,7 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       JWT_SECRET: CxtAt/A1de7X0jFcOAC2lH8pklAHW5YJL7JRJMWGohiOhJLsh6V48lhWZSBDvDYyoipXPcg4Jbxdq46DHB0eNg==
       JWT_EXPIRATION: 86400000
-      MEDIA_BASE_URI: https://forum-istad-api.cheat.casa/api/v1
+      MEDIA_BASE_URI: https://forum-istad-api.cheat.casa/api/v1/media
       MEDIA_SERVER_PATH: /home/foundation/medias/
       APP_MAIL_ENABLED: true
       MAIL_HOST: smtp.gmail.com

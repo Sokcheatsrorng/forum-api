@@ -15,8 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import java.security.Principal;
-import java.util.List;
 
 @RestController
 @RequestMapping("/votes")
@@ -39,6 +37,36 @@ public class VoteController {
         Integer userId = user.getId();
         VoteResponse createdVote = voteService.createVote(voteDTO, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdVote);
+    }
+
+    @PostMapping("/posts/{postId}/upvote")
+    @PreAuthorize("hasRole('USER')")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @Operation(summary = "Upvote a post",
+            description = "Upvote a post. If the user already voted, the vote is switched to an upvote.")
+    @ApiResponse(responseCode = "201", description = "Upvote recorded successfully")
+    @ApiResponse(responseCode = "401", description = "Unauthorized")
+    @ApiResponse(responseCode = "404", description = "Post not found")
+    public ResponseEntity<VoteResponse> upvote(
+            @PathVariable Integer postId,
+            @AuthenticationPrincipal CustomUserDetails user) {
+        Integer voteId = voteService.createUpvote(postId, user.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(voteService.getVoteById(voteId));
+    }
+
+    @PostMapping("/posts/{postId}/downvote")
+    @PreAuthorize("hasRole('USER')")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @Operation(summary = "Downvote a post",
+            description = "Downvote a post. If the user already voted, the vote is switched to a downvote.")
+    @ApiResponse(responseCode = "201", description = "Downvote recorded successfully")
+    @ApiResponse(responseCode = "401", description = "Unauthorized")
+    @ApiResponse(responseCode = "404", description = "Post not found")
+    public ResponseEntity<VoteResponse> downvote(
+            @PathVariable Integer postId,
+            @AuthenticationPrincipal CustomUserDetails user) {
+        Integer voteId = voteService.createDownvote(postId, user.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(voteService.getVoteById(voteId));
     }
 
     @GetMapping("/{voteId}")
@@ -75,20 +103,4 @@ public class VoteController {
         voteService.deleteVote(voteId);
         return ResponseEntity.noContent().build();
     }
-
-//    @GetMapping("/post/{postId}")
-//    @Operation(summary = "Get post votes", description = "Retrieve all votes for a specific post")
-//    @ApiResponse(responseCode = "200", description = "Votes retrieved successfully")
-//    public ResponseEntity<List<VoteResponse>> getVotesByPostId(@PathVariable Integer postId) {
-//        List<VoteResponse> votes = voteService.getVotesByPostId(postId);
-//        return ResponseEntity.ok(votes);
-//    }
-//
-//    @GetMapping("/user/{userId}")
-//    @Operation(summary = "Get user's votes", description = "Retrieve all votes created by a specific user")
-//    @ApiResponse(responseCode = "200", description = "Votes retrieved successfully")
-//    public ResponseEntity<List<VoteResponse>> getVotesByUserId(@PathVariable Integer userId) {
-//        List<VoteResponse> votes = voteService.getVotesByPostId(userId);
-//        return ResponseEntity.ok(votes);
-//    }
 }

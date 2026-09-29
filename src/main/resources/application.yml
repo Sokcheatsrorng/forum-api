@@ -6,6 +6,11 @@ spring:
     username: forum_user
     password: forum_password_secure
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 20000
+      leak-detection-threshold: 30000
   jpa:
     hibernate:
       ddl-auto: update
